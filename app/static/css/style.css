@@ -1,0 +1,33 @@
+/* カスタムスタイル */
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+.form-signin,
+.form-signup {
+    max-width: 400px;
+    margin: 2rem auto;
+}
+
+/* フラッシュメッセージのアニメーション */
+.alert {
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

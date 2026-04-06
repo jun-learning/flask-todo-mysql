@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{# base.html のレイアウト（ナビバー・フッター等）を継承する #}
+
+{% block title %}ユーザー登録 - ToDo App{% endblock %}
+{# base.html の {% block title %} の内容を上書き #}
+
+{% block content %}
+{# base.html の {% block content %} の内容を上書き #}
+<div class='form-signup'>
+    <h2 class='text-center mb-4'>ユーザー登録</h2>
+
+    <form method='POST' novalidate>
+        {{ form.hidden_tag() }}
+        {# CSRF トークンを hidden フィールドで埋め込む（必須・省略するとフォーム送信が400エラーになる） #}
+
+        <!-- ユーザー名 -->
+        <div class='mb-3'>
+            {{ form.username.label(class='form-label') }}
+            {# form.username.label は <label> タグを出力する #}
+            {{ form.username(class='form-control' + (' is-invalid' if form.username.errors else '')) }}
+            {# form.username() は <input> タグを出力する。エラー時は is-invalid クラスを追加 #}
+            {% if form.username.errors %}
+                <div class='invalid-feedback'>
+                    {% for error in form.username.errors %}
+                    {# form.username.errors はバリデーションエラーメッセージのリスト #}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <div class='form-text'>3〜20文字の英数字とアンダースコア</div>
+        </div>
+
+        <!-- メールアドレス -->
+        <div class='mb-3'>
+            {{ form.email.label(class='form-label') }}
+            {{ form.email(class='form-control' + (' is-invalid' if form.email.errors else ''), type='email') }}
+            {% if form.email.errors %}
+                <div class='invalid-feedback'>
+                    {% for error in form.email.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- パスワード -->
+        <div class='mb-3'>
+            {{ form.password.label(class='form-label') }}
+            {{ form.password(class='form-control' + (' is-invalid' if form.password.errors else '')) }}
+            {% if form.password.errors %}
+                <div class='invalid-feedback'>
+                    {% for error in form.password.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <div class='form-text'>8文字以上</div>
+        </div>
+
+        <!-- パスワード（確認） -->
+        <div class='mb-3'>
+            {{ form.password_confirm.label(class='form-label') }}
+            {{ form.password_confirm(class='form-control' + (' is-invalid' if form.password_confirm.errors else '')) }}
+            {% if form.password_confirm.errors %}
+                <div class='invalid-feedback'>
+                    {% for error in form.password_confirm.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- 送信ボタン -->
+        <div class='d-grid'>
+            {{ form.submit(class='btn btn-primary btn-lg') }}
+        </div>
+    </form>
+
+    <div class='text-center mt-3'>
+        <p>既にアカウントをお持ちですか？ <a href='{{ url_for('auth.login')}}'>ログイン</a></p>
+    </div>
+</div>
+{% endblock %}
