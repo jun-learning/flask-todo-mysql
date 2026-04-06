@@ -1,0 +1,24 @@
+# Flask Core
+Flask==3.0.0
+Flask-SQLAlchemy==3.1.1
+Flask-Migrate==4.0.5
+Flask-Login==0.6.3
+Flask-WTF==1.2.1
+Flask-Bcrypt==1.0.1
+
+# Database
+PyMySQL==1.1.0
+cryptography==41.0.7  # MySQL 8.0 の caching_sha2_password 認証に必要
+
+# Environment
+python-dotenv==1.0.0
+
+# WSGI Servers
+gunicorn==21.2.0
+uWSGI==2.0.23
+
+# Development
+pytest==7.4.3
+pytest-cov==4.1.0
+black==23.12.1
+flake8==6.1.0

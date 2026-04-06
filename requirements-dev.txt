@@ -1,0 +1,9 @@
+-r requirements.txt
+
+# Development Tools
+ipython==8.18.1
+ipdb==0.13.13
+
+# Testing
+faker==21.0.0
+factory-boy==3.3.0
