@@ -22,4 +22,36 @@
 
 ## ライセンス
 
+## 開発コマンド
+
+    # コンテナ起動
+    make up
+
+    # ログ確認
+    make logs
+
+    # シェルに入る
+    make shell
+
+    # データベースシェル
+    make db-shell
+
+    # テスト実行
+    make test
+
+    # カバレッジ測定
+    make test-cov
+
+    # コードフォーマット
+    make format
+
+    # リンター実行
+    make lint
+
+    # データベースリセット
+    make reset-db
+
+    # コンテナ停止
+    make down
+
 MIT License

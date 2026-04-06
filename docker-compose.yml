@@ -1,0 +1,47 @@
+services:
+  app:                          # Flask アプリケーションコンテナ
+    build: .                    # カレントディレクトリの Dockerfile を使ってビルド
+    ports:
+      - "5001:5000"             # ホスト5001番 → コンテナ5000番に転送（macOS AirPlayとの競合回避）
+    env_file:
+      - .env                    # .env ファイルの環境変数を読み込む
+    environment:
+      - FLASK_APP=run.py        # flask コマンドが探すファイルを指定
+      - FLASK_DEBUG=1           # デバッグモード有効（コード変更時の自動再起動）
+      - DATABASE_URL=mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE}
+      # db はコンテナ名（docker compose 内では DNS として使える）
+    volumes:
+      - .:/app                  # ホストのプロジェクトルートをコンテナの /app にマウント（ライブリロード用）
+    depends_on:
+      db:
+        condition: service_healthy  # db の healthcheck が成功するまで app を起動しない
+    # sleep 5: healthcheck の間隔(5s)分だけ待つ追加の保険
+    # 将来的には flask db upgrade を追加してマイグレーションも自動実行できる
+    command: >
+      sh -c "
+        echo 'Waiting for database...' &&
+        sleep 5 &&
+        python run.py
+      "
+
+  db:                           # MySQL 8.0 データベースコンテナ
+    image: mysql:8.0            # Docker Hub の公式 MySQL イメージを使用
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}  # root ユーザーのパスワード
+      - MYSQL_DATABASE=${MYSQL_DATABASE}            # 起動時に自動作成するDB名
+      - MYSQL_USER=${MYSQL_USER}                    # 追加ユーザー名
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}            # 追加ユーザーのパスワード
+    ports:
+      - "3306:3306"             # ホストから MySQL Workbench 等で接続する場合に使用
+    volumes:
+      - mysql_data:/var/lib/mysql                         # DBデータを名前付きボリュームに永続化
+      - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql  # 初回起動時に実行するSQL
+    healthcheck:
+      # mysqladmin ping で MySQL が応答できる状態かチェック
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 5s    # 5秒ごとにチェック
+      timeout: 3s     # 3秒以内に応答がなければ失敗
+      retries: 10     # 10回失敗したら unhealthy と判定
+
+volumes:
+  mysql_data:         # DB データを永続化する名前付きボリューム（docker compose down -v で削除可能）
