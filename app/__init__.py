@@ -56,6 +56,10 @@ def create_app(config_name='default'):
         from app.models.user import User  # 循環インポート回避のため関数内でimport
         return User.query.get(int(user_id))
 
+    # モデルを import して SQLAlchemy のメタデータに登録
+    # （この import がないと flask db migrate でテーブルが検出されない）
+    from app import models
+    
     # Blueprint を登録（各 Blueprint のルートがアプリに追加される）
     from app.blueprints.main import main_bp
     from app.blueprints.auth import auth_bp
