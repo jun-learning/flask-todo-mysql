@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}ToDoリスト - ToDo App{% endblock %}
+
+{% block content %}
+<div class='row'>
+    <div class='col-md-12'>
+        <h2>ToDoリスト</h2>
+        <p>ようこそ、{{ current_user.username }}さん！</p>
+        {# current_user.username でログイン中のユーザー名を表示 #}
+        <p class='text-muted'>（ToDoリストは次のWeekで実装します）</p>
+    </div>
+</div>
+{% endblock %}

@@ -1,3 +1,12 @@
 {% extends 'base.html' %}
-{% block title %}403 Forbidden{% endblock %}
-{% block content %}<p>アクセス権限がありません（Week 2 Day 4 で詳細実装予定）</p>{% endblock %}
+
+{% block title %}403 Forbidden - ToDo App{% endblock %}
+
+{% block content %}
+<div class='text-center py-5'>
+    <h1 class='display-1'>403</h1>
+    <p class='lead'>アクセス権限がありません</p>
+    <p>このリソースにアクセスする権限がありません。</p>
+    <a href='{{ url_for('todos.index')}}' class='btn btn-primary'>ToDoリストへ</a>
+</div>
+{% endblock %}

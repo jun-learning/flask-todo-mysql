@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}ホーム - ToDo App{% endblock %}
+
+{% block content %}
+<div class='text-center py-5'>
+    <h1 class='display-4 mb-4'>ToDo App</h1>
+    <p class='lead mb-4'>シンプルで使いやすいToDo管理アプリケーション</p>
+
+    {% if current_user.is_authenticated %}
+    {# ログイン済みの場合は ToDoリストへのリンクを表示 #}
+        <a href='{{ url_for('todos.index')}}' class='btn btn-primary btn-lg'>ToDoリストへ</a>
+    {% else %}
+    {# 未ログインの場合は登録・ログインボタンを表示 #}
+        <div class='d-flex justify-content-center gap-3'>
+            <a href='{{ url_for('auth.signup')}}' class='btn btn-primary btn-lg'>ユーザー登録</a>
+            <a href='{{ url_for('auth.login')}}' class='btn btn-outline-primary btn-lg'>ログイン</a>
+        </div>
+    {% endif %}
+
+    <div class='row mt-5'>
+        <div class='col-md-4'>
+            <div class='card'>
+                <div class='card-body'>
+                    <h5 class='card-title'>📝 簡単作成</h5>
+                    <p class='card-text'>すぐにToDoを作成して管理できます</p>
+                </div>
+            </div>
+        </div>
+        <div class='col-md-4'>
+            <div class='card'>
+                <div class='card-body'>
+                    <h5 class='card-title'>✅ 進捗管理</h5>
+                    <p class='card-text'>完了したToDoをチェックして管理</p>
+                </div>
+            </div>
+        </div>
+        <div class='col-md-4'>
+            <div class='card'>
+                <div class='card-body'>
+                    <h5 class='card-title'>🔒 安全</h5>
+                    <p class='card-text'>あなたのToDoは安全に保護されます</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
