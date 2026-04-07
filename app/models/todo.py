@@ -15,7 +15,8 @@ class Todo(db.Model):
     title = db.Column(db.String(100), nullable=False)          # タイトル（必須、最大100文字）
     description = db.Column(db.Text, nullable=True)            # 説明（任意）
     completed = db.Column(db.Boolean, nullable=False, default=False)  # 完了フラグ（デフォルトは未完了）
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    # models/todo.py 内の user_id カラム
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
     # user_id は users テーブルの id を参照する外部キー（必須）
     created_at = db.Column(db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
     # レコード作成時刻（UTC で自動設定）
