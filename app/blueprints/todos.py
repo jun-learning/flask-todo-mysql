@@ -120,8 +120,22 @@ def edit(id):
 @login_required
 def delete(id):
     '''ToDo削除'''
-    # 実装は後で
-    flash('削除機能は次のステップで実装します', 'info')
+    todo = Todo.query.get_or_404(id)
+
+    # 所有者チェック
+    if todo.user_id != current_user.id:
+        abort(403)
+
+    try:
+        db.session.delete(todo)  # セッションから削除（次の commit で DB からも削除される）
+        db.session.commit()
+
+        flash('ToDoを削除しました。', 'success')
+
+    except Exception as e:
+        db.session.rollback()
+        flash('ToDoの削除に失敗しました。', 'error')
+
     return redirect(url_for('todos.index'))
 
 
