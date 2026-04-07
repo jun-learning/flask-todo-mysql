@@ -46,3 +46,23 @@ def user(app):
     db.session.commit()     # DB にコミット（確定保存）
 
     return user  # テスト関数に User オブジェクトを渡す
+
+
+@pytest.fixture
+def csrf_app():
+    '''CSRF保護が有効なテスト用アプリ（CSRFテスト専用）'''
+    app = create_app('testing')
+    # テスト設定で無効化されたCSRFを強制的に有効化
+    app.config['WTF_CSRF_ENABLED'] = True
+    
+    with app.app_context():
+        db.create_all()
+        yield app
+        db.session.remove()
+        db.drop_all()
+
+
+@pytest.fixture
+def csrf_client(csrf_app):
+    '''CSRF保護が有効なテストクライアント'''
+    return csrf_app.test_client()
