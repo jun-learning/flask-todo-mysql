@@ -1,6 +1,7 @@
 '''
 Models Package
 '''
-from app.models.user import User  # User モデルを外部から import できるようにエクスポート
+from app.models.user import User
+from app.models.todo import Todo
 
-__all__ = ['User']
+__all__ = ['User', 'Todo']

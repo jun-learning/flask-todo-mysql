@@ -4,6 +4,7 @@ pytest設定ファイル
 import pytest
 from app import create_app, db    # Application Factory と DB インスタンス
 from app.models.user import User
+from app.models.todo import Todo
 
 
 @pytest.fixture
@@ -46,6 +47,21 @@ def user(app):
     db.session.commit()     # DB にコミット（確定保存）
 
     return user  # テスト関数に User オブジェクトを渡す
+
+
+@pytest.fixture
+def todo(app, user):
+    '''テスト用ToDo'''
+    todo = Todo(
+        title='Test Todo',
+        description='Test Description',
+        user_id=user.id
+    )
+
+    db.session.add(todo)
+    db.session.commit()
+
+    return todo
 
 
 @pytest.fixture
