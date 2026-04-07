@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}ToDo作成 - ToDo App{% endblock %}
+
+{% block content %}
+<div class='row'>
+    <div class='col-md-8 offset-md-2'>
+        <h2 class='mb-4'>ToDo作成</h2>
+
+        <form method='POST' novalidate>
+            {{ form.hidden_tag() }}
+            {# CSRF トークンを hidden フィールドとして埋め込む（Flask-WTF が自動生成） #}
+
+            <!-- タイトル -->
+            <div class='mb-3'>
+                {{ form.title.label(class='form-label') }}
+                {# form.title.label でフォームフィールドのラベルを表示 #}
+                {{ form.title(class='form-control' + (' is-invalid' if form.title.errors else '')) }}
+                {# バリデーションエラー時に is-invalid クラスを追加して赤枠表示 #}
+                {% if form.title.errors %}
+                    <div class='invalid-feedback'>
+                        {% for error in form.title.errors %}
+                            {{ error }}  {# バリデーションエラーメッセージを表示 #}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- 説明 -->
+            <div class='mb-3'>
+                {{ form.description.label(class='form-label') }}
+                {{ form.description(class='form-control' + (' is-invalid' if form.description.errors else ''), rows='5') }}
+                {% if form.description.errors %}
+                    <div class='invalid-feedback'>
+                        {% for error in form.description.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <div class='form-text'>500文字以内で入力してください</div>
+            </div>
+
+            <!-- ボタン -->
+            <div class='d-flex gap-2'>
+                {{ form.submit(class='btn btn-primary') }}
+                <a href='{{ url_for('todos.index')}}' class='btn btn-secondary'>キャンセル</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

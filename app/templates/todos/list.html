@@ -1,14 +1,104 @@
 {% extends 'base.html' %}
+{# base.html を継承（ナビバーやフッターを共通化） #}
 
 {% block title %}ToDoリスト - ToDo App{% endblock %}
 
 {% block content %}
 <div class='row'>
     <div class='col-md-12'>
-        <h2>ToDoリスト</h2>
-        <p>ようこそ、{{ current_user.username }}さん！</p>
-        {# current_user.username でログイン中のユーザー名を表示 #}
-        <p class='text-muted'>（ToDoリストは次のWeekで実装します）</p>
+        <div class='d-flex justify-content-between align-items-center mb-4'>
+            <h2>ToDoリスト</h2>
+            <a href='{{ url_for('todos.new')}}' class='btn btn-primary'>
+                {# url_for で Blueprint 名.関数名 を指定して URL を生成 #}
+                <i class='bi bi-plus-circle'></i> 新規作成
+            </a>
+        </div>
+
+        <!-- フィルタータブ -->
+        <ul class='nav nav-tabs mb-3'>
+            <li class='nav-item'>
+                <a class='nav-link {% if filter_type == 'all'%}active{% endif%}'
+                   href='{{ url_for('todos.index', filter='all')}}'>
+                   {# {% if %} でアクティブなタブに 'active' クラスを付与 #}
+                    全て <span class='badge bg-secondary'>{{ counts.all }}</span>
+                </a>
+            </li>
+            <li class='nav-item'>
+                <a class='nav-link {% if filter_type == 'active'%}active{% endif%}'
+                   href='{{ url_for('todos.index', filter='active')}}'>
+                    未完了 <span class='badge bg-warning'>{{ counts.active }}</span>
+                </a>
+            </li>
+            <li class='nav-item'>
+                <a class='nav-link {% if filter_type == 'completed'%}active{% endif%}'
+                   href='{{ url_for('todos.index', filter='completed')}}'>
+                    完了 <span class='badge bg-success'>{{ counts.completed }}</span>
+                </a>
+            </li>
+        </ul>
+
+        <!-- ToDoリスト -->
+        {% if todos %}
+            <div class='list-group'>
+                {% for todo in todos %}  {# todos リストをループ #}
+                <div class='list-group-item'>
+                    <div class='d-flex w-100 justify-content-between align-items-start'>
+                        <div class='flex-grow-1'>
+                            <div class='form-check'>
+                                <input class='form-check-input' type='checkbox'
+{% if todo.completed%}checked{% endif%}
+{#完了済みなら checked属性を付与 #}
+                                       disabled>
+                                <label class='form-check-label {% if todo.completed %}text-decoration-line-through text-muted{% endif %}'>
+                                    {# 完了済みなら取り消し線スタイルを適用 #}
+                                    <a href='{{ url_for('todos.show', id=todo.id)}}'
+                                       class='{% if todo.completed %}text-muted{% endif %}'>
+                                        {{ todo.title }}
+                                    </a>
+                                </label>
+                            </div>
+                            {% if todo.description %}  {# 説明がある場合のみ表示 #}
+                                <p class='mb-1 text-muted small'>
+                                    {{ todo.description[:100] }}
+                                    {# 100文字を超えた場合は ... で省略 #}
+                                    {% if todo.description|length > 100 %}...{% endif %}
+                                </p>
+                            {% endif %}
+                            <small class='text-muted'>
+                                作成: {{ todo.created_at.strftime('%Y-%m-%d %H:%M') }}
+                                {# strftime で日時を読みやすい形式にフォーマット #}
+                            </small>
+                        </div>
+                        <div class='btn-group' role='group'>
+                            <a href='{{ url_for('todos.edit', id=todo.id)}}'
+                               class='btn btn-sm btn-outline-primary'>編集</a>
+                            <form method='POST' action='{{ url_for('todos.delete', id=todo.id)}}'
+                                  style='display: inline;'>
+                                {{ toggle_form.hidden_tag() }}
+                                {# CSRF トークンを hidden フィールドとして埋め込む #}
+                                <button type='submit' class='btn btn-sm btn-outline-danger'
+                                        onclick='return confirm("本当に削除しますか？")'>削除</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}  {# todos が空の場合（for...else 構文）#}
+            <div class='alert alert-info'>
+                {% if filter_type == 'active' %}
+                    未完了のToDoはありません。
+                {% elif filter_type == 'completed' %}
+                    完了したToDoはありません。
+                {% else %}
+                    ToDoがありません。<a href='{{ url_for('todos.new')}}'>新規作成</a>してください。
+                {% endif %}
+            </div>
+        {% endif %}
     </div>
 </div>
+{% endblock %}
+
+{% block extra_css %}
+<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css'>
 {% endblock %}
