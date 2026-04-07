@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}ToDo編集 - ToDo App{% endblock %}
+
+{% block content %}
+<div class='row'>
+    <div class='col-md-8 offset-md-2'>
+        <h2 class='mb-4'>ToDo編集</h2>
+
+        <form method='POST' novalidate>
+            {{ form.hidden_tag() }}
+
+            <!-- タイトル -->
+            <div class='mb-3'>
+                {{ form.title.label(class='form-label') }}
+                {{ form.title(class='form-control' + (' is-invalid' if form.title.errors else '')) }}
+                {% if form.title.errors %}
+                    <div class='invalid-feedback'>
+                        {% for error in form.title.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- 説明 -->
+            <div class='mb-3'>
+                {{ form.description.label(class='form-label') }}
+                {{ form.description(class='form-control' + (' is-invalid' if form.description.errors else ''), rows='5') }}
+                {% if form.description.errors %}
+                    <div class='invalid-feedback'>
+                        {% for error in form.description.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <div class='form-text'>500文字以内で入力してください</div>
+            </div>
+
+            <!-- メタデータ表示 -->
+            <div class='card mb-3'>
+                <div class='card-body'>
+                    <p class='card-text mb-1'>
+                        <small class='text-muted'>
+                            作成日時: {{ todo.created_at.strftime('%Y-%m-%d %H:%M:%S') }}
+                        </small>
+                    </p>
+                    <p class='card-text mb-0'>
+                        <small class='text-muted'>
+                            更新日時: {{ todo.updated_at.strftime('%Y-%m-%d %H:%M:%S') }}
+                        </small>
+                    </p>
+                </div>
+            </div>
+
+            <!-- ボタン -->
+            <div class='d-flex gap-2'>
+                {{ form.submit(class='btn btn-primary') }}
+                <a href='{{ url_for('todos.show', id=todo.id)}}' class='btn btn-secondary'>キャンセル</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ todo.title }} - ToDo App{% endblock %}
+{# {{ }} で Python 変数を出力。todo.title で ToDo のタイトルをページタイトルに使用 #}
+
+{% block content %}
+<div class='row'>
+    <div class='col-md-8 offset-md-2'>
+        <!-- ヘッダー -->
+        <div class='d-flex justify-content-between align-items-center mb-4'>
+            <h2>ToDo詳細</h2>
+            <a href='{{ url_for('todos.index')}}' class='btn btn-secondary'>
+                <i class='bi bi-arrow-left'></i> 一覧に戻る
+            </a>
+        </div>
+
+        <!-- ステータスバッジ -->
+        <div class='mb-3'>
+            {% if todo.completed %}
+                <span class='badge bg-success fs-6'>完了</span>
+            {% else %}
+                <span class='badge bg-warning fs-6'>未完了</span>
+            {% endif %}
+        </div>
+
+        <!-- タイトル -->
+        <h3 class='{% if todo.completed %}text-decoration-line-through text-muted{% endif %}'>
+            {{ todo.title }}
+        </h3>
+
+        <!-- 説明 -->
+        <div class='card mb-4'>
+            <div class='card-header'>
+                <strong>説明</strong>
+            </div>
+            <div class='card-body'>
+                {% if todo.description %}
+                    <p class='card-text' style='white-space: pre-wrap;'>{{ todo.description }}</p>
+                    {# white-space: pre-wrap で改行を保持して表示 #}
+                {% else %}
+                    <p class='card-text text-muted'>説明はありません</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- 詳細情報 -->
+        <div class='card mb-4'>
+            <div class='card-header'>
+                <strong>詳細情報</strong>
+            </div>
+            <div class='card-body'>
+                <table class='table table-borderless mb-0'>
+                    <tbody>
+                        <tr>
+                            <th scope='row' class='w-25'>作成日時</th>
+                            <td>{{ todo.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                        </tr>
+                        <tr>
+                            <th scope='row'>更新日時</th>
+                            <td>{{ todo.updated_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                        </tr>
+                        <tr>
+                            <th scope='row'>ステータス</th>
+                            <td>
+                                {% if todo.completed %}
+                                    <span class='text-success'>完了</span>
+                                {% else %}
+                                    <span class='text-warning'>未完了</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- アクションボタン -->
+        <div class='d-flex gap-2'>
+            <a href='{{ url_for('todos.edit', id=todo.id)}}' class='btn btn-primary'>
+                <i class='bi bi-pencil'></i> 編集
+            </a>
+            <form method='POST' action='{{ url_for('todos.toggle', id=todo.id)}}'
+                  style='display: inline;'>
+                <input type='hidden' name='csrf_token' value='{{ csrf_token() }}'>
+                {# CSRF トークンを手動で埋め込む（FlaskForm を使わない場合） #}
+                {% if todo.completed %}
+                    <button type='submit' class='btn btn-warning'>
+                        <i class='bi bi-arrow-counterclockwise'></i> 未完了に戻す
+                    </button>
+                {% else %}
+                    <button type='submit' class='btn btn-success'>
+                        <i class='bi bi-check-circle'></i> 完了にする
+                    </button>
+                {% endif %}
+            </form>
+            <form method='POST' action='{{ url_for('todos.delete', id=todo.id)}}'
+                  style='display: inline;'>
+                <input type='hidden' name='csrf_token' value='{{ csrf_token() }}'>
+                <button type='submit' class='btn btn-danger'
+                        onclick='return confirm("本当に削除しますか？")'>
+                    <i class='bi bi-trash'></i> 削除
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css'>
+{% endblock %}

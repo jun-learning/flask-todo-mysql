@@ -88,9 +88,32 @@ def show(id):
 @login_required
 def edit(id):
     '''ToDo編集'''
-    # 実装は後で
-    flash('編集機能は次のステップで実装します', 'info')
-    return redirect(url_for('todos.index'))
+    todo = Todo.query.get_or_404(id)  # 存在しない id なら 404 エラー
+
+    # 所有者チェック: 他人の ToDo を編集しようとしたら 403 エラー
+    if todo.user_id != current_user.id:
+        abort(403)
+
+    # obj=todo を渡すと、フォームの初期値に既存データが入力される
+    form = TodoForm(obj=todo)
+
+    if form.validate_on_submit():
+        # バリデーション通過 → フォームデータで ToDo を更新
+        todo.title = form.title.data
+        todo.description = form.description.data
+        # updated_at は onupdate=lambda: datetime.now(timezone.utc) で自動更新される
+
+        try:
+            db.session.commit()  # add() は不要（既存オブジェクトの変更は自動追跡される）
+
+            flash('ToDoを更新しました。', 'success')
+            return redirect(url_for('todos.show', id=todo.id))
+
+        except Exception as e:
+            db.session.rollback()
+            flash('ToDoの更新に失敗しました。', 'error')
+
+    return render_template('todos/edit.html', form=form, todo=todo)
 
 
 @todos_bp.route('/<int:id>/delete', methods=['POST'])

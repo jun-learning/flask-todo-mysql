@@ -45,3 +45,35 @@ main {
     text-decoration: line-through;
     color: #6c757d;
 }
+
+
+/* ToDoカード */
+.card {
+    border: 1px solid #dee2e6;
+    transition: box-shadow 0.2s;
+}
+
+.card:hover {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+/* ボタングループの間隔 */
+.d-flex.gap-2 {
+    gap: 0.5rem !important;
+}
+
+/* テーブル */
+.table-borderless th {
+    font-weight: 600;
+    color: #495057;
+}
+
+/* バッジ */
+.badge {
+    padding: 0.5em 1em;
+}
+
+/* アイコンとテキストの間隔 */
+.btn i {
+    margin-right: 0.25rem;
+}
