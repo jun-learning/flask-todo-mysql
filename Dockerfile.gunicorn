@@ -1,0 +1,29 @@
+FROM python:3.11-slim
+
+# 作業ディレクトリ設定
+WORKDIR /app
+
+# システムパッケージ更新とMySQL依存関係インストール
+RUN apt-get update && apt-get install -y \
+    default-libmysqlclient-dev \
+    build-essential \
+    pkg-config \
+    && rm -rf /var/lib/apt/lists/*
+
+# Pythonパッケージのキャッシュ無効化
+ENV PYTHONUNBUFFERED=1
+
+# 依存関係ファイルコピー
+COPY requirements.txt .
+
+# 依存関係インストール
+RUN pip install --no-cache-dir -r requirements.txt
+
+# アプリケーションコードコピー
+COPY . .
+
+# ポート公開
+EXPOSE 8000
+
+# Gunicorn起動
+CMD ["gunicorn", "-c", "gunicorn.conf.py", "run:app"]
