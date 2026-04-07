@@ -11,24 +11,28 @@ todos_bp = Blueprint('todos', __name__)
 
 
 @todos_bp.route('/')
-@login_required  # 未ログインなら自動的にログインページへリダイレクト
+@login_required
 def index():
     '''ToDoリスト'''
-    # URL クエリパラメータからフィルタータイプを取得（?filter=active 等）
-    # デフォルトは 'all'（全件表示）
+    # URL クエリパラメータからフィルタータイプを取得
     filter_type = request.args.get('filter', 'all')
 
-    # ToDoリスト取得（現在ログイン中のユーザーの ToDo のみ）
+    # 有効なフィルタータイプか確認（不正な値はデフォルトに戻す）
+    valid_filters = ['all', 'active', 'completed']
+    if filter_type not in valid_filters:
+        filter_type = 'all'
+
+    # ToDoリスト取得
     todos = Todo.get_user_todos(current_user.id, filter_type)
 
-    # フィルタータブのカウントバッジ用に各件数を取得
+    # 各フィルターの件数を取得
     counts = {
         'all': Todo.count_user_todos(current_user.id, 'all'),
         'active': Todo.count_user_todos(current_user.id, 'active'),
         'completed': Todo.count_user_todos(current_user.id, 'completed')
     }
 
-    # 完了切り替えフォーム（CSRF トークン生成のために作成）
+    # 切り替えフォーム
     toggle_form = TodoToggleForm()
 
     return render_template(

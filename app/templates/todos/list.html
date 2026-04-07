@@ -15,87 +15,99 @@
         </div>
 
         <!-- フィルタータブ -->
-        <ul class='nav nav-tabs mb-3'>
-            <li class='nav-item'>
+        <ul class='nav nav-tabs mb-3' role='tablist'>
+            <li class='nav-item' role='presentation'>
                 <a class='nav-link {% if filter_type == 'all'%}active{% endif%}'
-                   href='{{ url_for('todos.index', filter='all')}}'>
-                   {# {% if %} でアクティブなタブに 'active' クラスを付与 #}
-                    全て <span class='badge bg-secondary'>{{ counts.all }}</span>
+                href='{{ url_for('todos.index', filter='all')}}'
+                role='tab'>
+                    全て
+                    {% if counts.all > 0 %}
+                        {# 件数が 0 のときはバッジを非表示にしてすっきり見せる #}
+                        <span class='badge rounded-pill bg-secondary ms-1'>{{ counts.all }}</span>
+                    {% endif %}
                 </a>
             </li>
-            <li class='nav-item'>
+            <li class='nav-item' role='presentation'>
                 <a class='nav-link {% if filter_type == 'active'%}active{% endif%}'
-                   href='{{ url_for('todos.index', filter='active')}}'>
-                    未完了 <span class='badge bg-warning'>{{ counts.active }}</span>
+                href='{{ url_for('todos.index', filter='active')}}'
+                role='tab'>
+                    未完了
+                    {% if counts.active > 0 %}
+                        <span class='badge rounded-pill bg-warning text-dark ms-1'>{{ counts.active }}</span>
+                    {% endif %}
                 </a>
             </li>
-            <li class='nav-item'>
+            <li class='nav-item' role='presentation'>
                 <a class='nav-link {% if filter_type == 'completed'%}active{% endif%}'
-                   href='{{ url_for('todos.index', filter='completed')}}'>
-                    完了 <span class='badge bg-success'>{{ counts.completed }}</span>
+                href='{{ url_for('todos.index', filter='completed')}}'
+                role='tab'>
+                    完了
+                    {% if counts.completed > 0 %}
+                        <span class='badge rounded-pill bg-success ms-1'>{{ counts.completed }}</span>
+                    {% endif %}
                 </a>
             </li>
         </ul>
 
         <!-- ToDoリスト -->
-{% if todos %}
-    <div class='list-group'>
-        {% for todo in todos %}
-        <div class='list-group-item'>
-            <div class='d-flex w-100 justify-content-between align-items-start'>
-                <div class='flex-grow-1'>
-                    <div class='form-check'>
-                        <form method='POST' action='{{ url_for('todos.toggle', id=todo.id)}}'
-                              style='display: inline;'>
-                            {{ toggle_form.hidden_tag() }}
-                            {# CSRF トークンを埋め込む #}
-                            <input class='form-check-input' type='checkbox'
-{% if todo.completed%}checked{% endif%}
-                                   onchange='this.form.submit()'>
-                            {# チェックが変わったら即座にフォームを送信（JS で切り替え） #}
-                        </form>
-                        <label class='form-check-label {% if todo.completed %}text-decoration-line-through text-muted{% endif %}'>
-                            <a href='{{ url_for('todos.show', id=todo.id)}}'
-                               class='{% if todo.completed %}text-muted{% endif %}'>
-                                {{ todo.title }}
-                            </a>
-                        </label>
+        {% if todos %}
+            <div class='list-group'>
+                {% for todo in todos %}
+                <div class='list-group-item'>
+                    <div class='d-flex w-100 justify-content-between align-items-start'>
+                        <div class='flex-grow-1'>
+                            <div class='form-check'>
+                                <form method='POST' action='{{ url_for('todos.toggle', id=todo.id)}}'
+                                    style='display: inline;'>
+                                    {{ toggle_form.hidden_tag() }}
+                                    {# CSRF トークンを埋め込む #}
+                                    <input class='form-check-input' type='checkbox'
+        {% if todo.completed%}checked{% endif%}
+                                        onchange='this.form.submit()'>
+                                    {# チェックが変わったら即座にフォームを送信（JS で切り替え） #}
+                                </form>
+                                <label class='form-check-label {% if todo.completed %}text-decoration-line-through text-muted{% endif %}'>
+                                    <a href='{{ url_for('todos.show', id=todo.id)}}'
+                                    class='{% if todo.completed %}text-muted{% endif %}'>
+                                        {{ todo.title }}
+                                    </a>
+                                </label>
+                            </div>
+                            {% if todo.description %}
+                                <p class='mb-1 text-muted small'>
+                                    {{ todo.description[:100] }}
+                                    {% if todo.description|length > 100 %}...{% endif %}
+                                </p>
+                            {% endif %}
+                            <small class='text-muted'>
+                                作成: {{ todo.created_at.strftime('%Y-%m-%d %H:%M') }}
+                            </small>
+                        </div>
+                        <div class='btn-group' role='group'>
+                            <a href='{{ url_for('todos.edit', id=todo.id)}}'
+                            class='btn btn-sm btn-outline-primary'>編集</a>
+                            <form method='POST' action='{{ url_for('todos.delete', id=todo.id)}}'
+                                style='display: inline;'>
+                                {{ toggle_form.hidden_tag() }}
+                                <button type='submit' class='btn btn-sm btn-outline-danger'
+                                        onclick='return confirm("本当に削除しますか？")'>削除</button>
+                            </form>
+                        </div>
                     </div>
-                    {% if todo.description %}
-                        <p class='mb-1 text-muted small'>
-                            {{ todo.description[:100] }}
-                            {% if todo.description|length > 100 %}...{% endif %}
-                        </p>
-                    {% endif %}
-                    <small class='text-muted'>
-                        作成: {{ todo.created_at.strftime('%Y-%m-%d %H:%M') }}
-                    </small>
                 </div>
-                <div class='btn-group' role='group'>
-                    <a href='{{ url_for('todos.edit', id=todo.id)}}'
-                       class='btn btn-sm btn-outline-primary'>編集</a>
-                    <form method='POST' action='{{ url_for('todos.delete', id=todo.id)}}'
-                          style='display: inline;'>
-                        {{ toggle_form.hidden_tag() }}
-                        <button type='submit' class='btn btn-sm btn-outline-danger'
-                                onclick='return confirm("本当に削除しますか？")'>削除</button>
-                    </form>
-                </div>
+                {% endfor %}
             </div>
-        </div>
-        {% endfor %}
-    </div>
-{% else %}
-    <div class='alert alert-info'>
-        {% if filter_type == 'active' %}
-            未完了のToDoはありません。
-        {% elif filter_type == 'completed' %}
-            完了したToDoはありません。
         {% else %}
-            ToDoがありません。<a href='{{ url_for('todos.new')}}'>新規作成</a>してください。
+            <div class='alert alert-info'>
+                {% if filter_type == 'active' %}
+                    未完了のToDoはありません。
+                {% elif filter_type == 'completed' %}
+                    完了したToDoはありません。
+                {% else %}
+                    ToDoがありません。<a href='{{ url_for('todos.new')}}'>新規作成</a>してください。
+                {% endif %}
+            </div>
         {% endif %}
-    </div>
-{% endif %}
     </div>
 </div>
 {% endblock %}
